@@ -1,0 +1,22 @@
+Transformations applied to a point or a vector using row-major can be written in sequential order (or reading order). Imagine for instance that you want to first rotate point P around the y-axis, then rotate P again around the z-axis, and finally translate point P using matrix T. In a row-major order we can write:
+
+P' = P * Ry * Rz * T
+
+Now, when using a column-major notation (the one I use in the slides of the course), we would need to call the transforms in the reverse order (which some people find counter-intuitive):
+
+P' = T * Rz * Ry * P
+
+Some people may think there must be a reason to prefer one system to another. Both conventions are correct and give us the same result, but for technical reasons, most mathematics and physics books generally treat vectors as column vectors.
+
+Order of transformation when we use column-major matrices is more similar in mathematics to the way we write function evaluation and composition.
+
+As a summary, if we want to:
+
+    First Rotate around the y-axis
+    Then Rotate around the z-axis
+    Then Translate using matrix T
+
+We will have to perform the following order of multiplications:
+
+    In row-major: P' = P * Ry * Rz * T
+    In column-major: P' = T * Rz * Ry * P
