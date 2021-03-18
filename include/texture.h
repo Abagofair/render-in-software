@@ -13,6 +13,7 @@ typedef struct Texture2D {
 extern int textureWidth;
 extern int textureHeight;
 extern uint32_t* meshTexture;
+extern unsigned char* meshTextureUC;
 extern const uint8_t REDBRICK_TEXTURE[];
 
 #endif

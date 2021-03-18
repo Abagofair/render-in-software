@@ -79,7 +79,7 @@ TGA_t* ReadUncompressedRGB(char* fileName)
     //For a pixel depth of 24 bits, each pixel is stored with 8 bits per color. 
     //--WIKI--
 
-    uint32_t* buffer = (uint32_t*)malloc(sizeof(uint32_t)*pixels);
+    uint32_t* buffer = (uint32_t*)calloc(pixels, sizeof(uint32_t));
     if (buffer == NULL)
     {
         fprintf(stderr, "Could not allocate memory for the TGA header\n");
@@ -93,10 +93,19 @@ TGA_t* ReadUncompressedRGB(char* fileName)
         return tga;
     }
 
+    //FIX
     for (int i = 0; i < pixels; ++i)
     {
-        fread(color, sizeof(uint8_t), 3, fp);
-        buffer[i] = *color;
+        uint8_t a = 0xFF;
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
+
+        fread(&r, sizeof(uint8_t), 1, fp);
+        fread(&g, sizeof(uint8_t), 1, fp);
+        fread(&b, sizeof(uint8_t), 1, fp);
+
+        buffer[i] = (r & 0x00FF0000) | (g & 0x0000FF00) | (b & 0x000000FF) | a;
     }
 
     free(color);

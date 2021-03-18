@@ -14,20 +14,20 @@ Triangle SortTriangle(Triangle triangle)
 
     if (y0 > y1)
     {
-        floatSwap(&y0, &y1);
-        floatSwap(&x0, &x1);
+        FloatSwap(&y0, &y1);
+        FloatSwap(&x0, &x1);
     }
 
     if (y1 > y2)
     {
-        floatSwap(&y1, &y2);
-        floatSwap(&x1, &x2);
+        FloatSwap(&y1, &y2);
+        FloatSwap(&x1, &x2);
     }
 
     if (y0 > y1)
     {
-        floatSwap(&y0, &y1);
-        floatSwap(&x0, &x1);
+        FloatSwap(&y0, &y1);
+        FloatSwap(&x0, &x1);
     }
 
     return (Triangle) {
@@ -48,15 +48,7 @@ Vector2 TriangleMidpoint(Triangle orderedTriangle)
 
     float x2 = orderedTriangle.points[2].x;
     float y2 = orderedTriangle.points[2].y;
-
-    /*float upper = y2 - y0;
-    float lower = x2 - x0;
-    if (lower == 0.0)
-        lower = 1.0f;
-    float a = upper / lower;
-    float b = y0 - a * x0;
-    float midpointX = (y1 - b) / a;*/
-
+    
     float midpointX = (((x2 - x0) * (y1 - y0)) / (y2 - y0)) + x0;
 
     return (Vector2) {
@@ -86,15 +78,21 @@ Vector3 BarycentricWeights(Vector2 a, Vector2 b, Vector2 c, Vector2 p)
     Vector2 ap = Vector2Sub(p, a);
     Vector2 bp = Vector2Sub(p, b);
 
-    float areaAbc = (ab.x * ac.y) - (ab.y * ac.x);
+    // Calcualte the area of the full triangle ABC using cross product (area of parallelogram)
+    float area_triangle_abc = (ab.x * ac.y - ab.y * ac.x);
 
-    float alpha = ((bc.x * bp.y) - (bp.x * bc.y)) / areaAbc;
+    // Weight alpha is the area of subtriangle BCP divided by the area of the full triangle ABC
+    float alpha = (bc.x * bp.y - bp.x * bc.y) / area_triangle_abc;
 
-    float beta = ((ap.x * ac.y) - (ac.x * ap.y)) / areaAbc;
+    // Weight beta is the area of subtriangle ACP divided by the area of the full triangle ABC
+    float beta = (ap.x * ac.y - ac.x * ap.y) / area_triangle_abc;
 
-    float  gamma = 1 - alpha - beta;
+    // Weight gamma is easily found since barycentric cooordinates always add up to 1
+    float gamma = 1 - alpha - beta;
 
     return (Vector3) {
-        alpha, beta, gamma
+        .x = alpha, 
+        .y = beta, 
+        .z = gamma
     };
 }

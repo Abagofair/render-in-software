@@ -3,12 +3,13 @@
 Mesh mesh = {
     .vertices = NULL,
     .faces = NULL,
+    .uvCoords = NULL,
     .rotation = {0, 0, 0},
     .scale = {1.0, 1.0, 1.0},
     .translation = {0, 0, 0}
 };
 
-Vector3 cubeVertices[N_CUBE_VERTICES] = {
+/*Vector3 cubeVertices[N_CUBE_VERTICES] = {
     {-1, -1, -1},
     {-1, 1, -1},
     {1, 1, -1},
@@ -38,9 +39,9 @@ Face cubeFaces[N_CUBE_FACES] = {
     // bottom
     { .a = 6, .b = 8, .c = 1, .a_uv = { 0, 0 }, .b_uv = { 0, 1 }, .c_uv = { 1, 1 }, .color = 0xFFFFFFFF },
     { .a = 6, .b = 1, .c = 4, .a_uv = { 0, 0 }, .b_uv = { 1, 1 }, .c_uv = { 1, 0 }, .color = 0xFFFFFFFF }
-};
+};*/
 
-void LoadCubeMesh(void)
+/*void LoadCubeMesh(void)
 {
     vec_init(&mesh.vertices);
     vec_init(&mesh.faces);
@@ -56,15 +57,7 @@ void LoadCubeMesh(void)
         Face cubeFace = cubeFaces[i];
         vec_push(&mesh.faces, cubeFace);
     }
-}
-
-typedef struct Obj {
-    FaceVec faces;
-    Vector3Vec vecs;
-    vec_void_t uvIndex;
-    vec_void_t vertexIndex;
-    Texture2DVec vts;
-} Obj_t;
+}*/
 
 //use the popular library i cant remember what's called - everyone uses it
 Mesh LoadObj(const char* fileName)
@@ -77,23 +70,13 @@ Mesh LoadObj(const char* fileName)
         perror("Error opening file!");
     }
 
-    char str[255];
+    char str[1024];
 
-    Mesh objMesh = {
-        .vertices = {0, 0, 0},
-        .faces = {0, 0, 0},
-        .rotation = {0, 0, 0}
-    };
-
-    Obj_t obj;
-    vec_init(&obj.faces);
-    vec_init(&obj.vecs);
-    vec_init(&obj.uvIndex);
-    vec_init(&obj.vertexIndex);
-    vec_init(&obj.vts);
+    Mesh objMesh;
 
     vec_init(&objMesh.vertices);
     vec_init(&objMesh.faces);
+    vec_init(&objMesh.uvCoords);
 
 //shits broken
     while (fgets(str, 1024, objFile))
@@ -101,36 +84,25 @@ Mesh LoadObj(const char* fileName)
         if (strncmp(str, "v ", 2) == 0)
         {
             Vector3 vec;
-            sscanf(str, "%*s %f %f %f", &vec.x, &vec.y, &vec.z);
+            sscanf(str, "v %f %f %f", &vec.x, &vec.y, &vec.z);
             vec_push(&objMesh.vertices, vec);
         }
         else if (strncmp(str, "f ", 2) == 0)
         {
             Face face;
-            int uvIndex[3];
-
-            sscanf(str, "%*s %i/%i/%*i %i/%i/%*i %i/%i/%*i", 
-                &face.a, &face.b, &face.c,
-                &uvIndex, &uvIndex, &uvIndex);
+            sscanf(str, "f %d/%d/%*d %d/%d/%*d %d/%d/%*d",
+                &face.a, &face.a_uv, 
+                &face.b, &face.b_uv, 
+                &face.c, &face.c_uv);
 
             vec_push(&objMesh.faces, face);
-            vec_push(&obj.uvIndex, uvIndex);
         }
-        else if (strncmp(str, "vt ", 2) == 0)
+        else if (strncmp(str, "vt ", 3) == 0)
         {
-            Texture2D tex;
-            sscanf(str, "%*s %d %d", &tex.u, &tex.v);
-            vec_push(&obj.vts, tex);
+            Texture2D coords;
+            sscanf(str, "vt %f %f", &coords.u, &coords.v);
+            vec_push(&objMesh.uvCoords, coords);
         }
-    }
-
-    for (int i = 0; i < mesh.faces.length; i++)
-    {
-        Face* face = &mesh.faces.data[i];
-        int* indexes = obj.uvIndex.data[i];
-        face->a_uv  = obj.vts.data[indexes[0]];
-        face->b_uv  = obj.vts.data[indexes[1]];
-        face->c_uv  = obj.vts.data[indexes[2]];
     }
     
     fclose(objFile);

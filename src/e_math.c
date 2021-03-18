@@ -113,7 +113,7 @@ Matrix4x4 CreatePerspective(float fov, float aspect, float znear, float zfar)
     m.m[1][1] = 1 / tan(fov/2);
     m.m[2][2] = zfar / (zfar - znear);
     m.m[2][3] = (-zfar * znear) / (zfar - znear);
-    m.m[3][2] = 1.0f;
+    m.m[3][2] = 1.0;
     return m;
 }
 
@@ -139,6 +139,23 @@ Vector4 Vec3ToVec4(const Vector3* v)
         .z = v->z,
         .w = 1.0f
     };
+}
+
+Matrix4x4 LookAt(Vector3 eye, Vector3 target, Vector3 up)
+{
+    Vector3 eyeToTarget = Vector3Sub(target, eye);
+    Vector3Norm(&eyeToTarget);
+    Vector3 right = CrossProduct(up, eyeToTarget);
+    Vector3Norm(&right);
+    Vector3 y = CrossProduct(eyeToTarget, right);
+
+    Matrix4x4 viewMatrix = {{
+        {right.x, right.y, right.z, -Vector3Dot(right, eye)},
+        {y.x, y.y, y.z, -Vector3Dot(y, eye)},
+        {eyeToTarget.x, eyeToTarget.y, eyeToTarget.z, -Vector3Dot(eyeToTarget, eye)}
+    }};
+
+    return viewMatrix;
 }
 
 char* Vector2ToString(Vector2 v)
@@ -208,7 +225,7 @@ Vector3 Vector3Scale(Vector3 v, float c)
         .x = v.x * c,
         .y = v.y * c,
         .z = v.z * c
-    };
+    };  
 }
 
 Vector2 Vector2Div(Vector2 v, float c)
@@ -298,4 +315,23 @@ Vector3 RotateZ(Vector3 v, float angle)
 Vector3 Zero()
 {
     return (Vector3){ 0, 0 ,0 };
+}
+
+Vector3 New(float x, float y, float z)
+{
+    return (Vector3){x, y, z};
+}
+
+Vector3 Vector3Clone(Vector3* toClone)
+{
+    return (Vector3) {
+        .x = toClone->x,
+        .y = toClone->y,
+        .z = toClone->z
+    };
+}
+
+float lerpf(float a, float b, float t)
+{
+    return a + t * (b - a);
 }

@@ -17,6 +17,7 @@ typedef struct
 {
     Vector3Vec vertices;
     FaceVec faces;
+    Texture2DVec uvCoords;
     Vector3 rotation;
     Vector3 scale;
     Vector3 translation;

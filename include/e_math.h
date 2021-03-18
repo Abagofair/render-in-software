@@ -38,6 +38,8 @@ Vector4 MultiplyVec4Perspective(const Matrix4x4* proj, const Vector4* v);
 Vector4 MatrixMultiplyVec4(const Matrix4x4* m, const Vector4* v);
 Vector4 Vec3ToVec4(const Vector3* v);
 
+Matrix4x4 LookAt(Vector3 eye, Vector3 target, Vector3 up);
+
 char* Vector2ToString(Vector2 v);
 
 float Vector2Length(Vector2* v);
@@ -59,5 +61,10 @@ Vector3 RotateX(Vector3 v, float angle);
 Vector3 RotateY(Vector3 v, float angle);
 Vector3 RotateZ(Vector3 v, float angle);
 Vector3 Zero();
+Vector3 New(float x, float y, float z);
+
+Vector3 Vector3Clone(Vector3* toClone);
+
+float lerpf(float a, float b, float t);
 
 #endif

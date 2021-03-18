@@ -1,5 +1,5 @@
-#ifndef _TRIANGLE_H_
-#define _TRIANGLE_H_
+#ifndef _MY_TRIANGLE_H_
+#define _MY_TRIANGLE_H_
 
 #include "e_math.h"
 #include "texture.h"
@@ -14,9 +14,9 @@ typedef struct
     int a;
     int b;
     int c;
-    Texture2D a_uv;
-    Texture2D b_uv;
-    Texture2D c_uv;
+    int a_uv;
+    int b_uv;
+    int c_uv;
     uint32_t color;
 } Face;
 
@@ -25,7 +25,6 @@ typedef struct
     Vector4 points[3];
     Texture2D texCoords[3];
     uint32_t color;
-    float avgDepth;
 } Triangle;
 
 Triangle SortTriangle(Triangle triangle);
